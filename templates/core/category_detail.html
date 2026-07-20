@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block title %}{{ category.name }} | {{ business_info.business_name }}{% endblock %}
+
+{% block content %}
+<section class="content-band category-listing">
+    <div class="site-container">
+        <p class="section-kicker">AC Parts Category</p>
+        <h1 class="section-title">{{ category.name }}</h1>
+
+        {% if subcategories %}
+        <nav class="subcategory-chips" aria-label="Filter {{ category.name }} products">
+            <a class="subcategory-chip{% if not selected_subcategory %} is-selected{% endif %}" href="{% url 'category-detail' category.slug %}">All</a>
+            {% for subcategory in subcategories %}
+            <a class="subcategory-chip{% if selected_subcategory == subcategory.slug %} is-selected{% endif %}" href="{% url 'category-detail' category.slug %}?sub={{ subcategory.slug }}">{{ subcategory.name }}</a>
+            {% endfor %}
+        </nav>
+        {% endif %}
+
+        {% if page_obj.object_list %}
+        <div class="category-product-grid">
+            {% for product in page_obj %}
+            <a class="category-product-card" href="{% url 'product-detail' product.slug %}">
+                <span class="category-product-image">
+                    {% with primary_image=product.images.all|first %}
+                    {% if primary_image %}<img src="{{ primary_image.image.url }}" alt="{{ product.name }}" loading="lazy">{% else %}<svg aria-hidden="true" viewBox="0 0 64 64"><path d="M12 18h40v28H12zM18 18V11h28v7M20 31h24M32 25v12"/></svg>{% endif %}
+                    {% endwith %}
+                </span>
+                <span class="category-product-name">{{ product.name }}</span>
+            </a>
+            {% endfor %}
+        </div>
+
+        {% if page_obj.has_other_pages %}
+        <nav class="pagination" aria-label="Product pages">
+            {% if page_obj.has_previous %}<a href="?{% if selected_subcategory %}sub={{ selected_subcategory }}&amp;{% endif %}page={{ page_obj.previous_page_number }}">Previous</a>{% endif %}
+            <span>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+            {% if page_obj.has_next %}<a href="?{% if selected_subcategory %}sub={{ selected_subcategory }}&amp;{% endif %}page={{ page_obj.next_page_number }}">Next</a>{% endif %}
+        </nav>
+        {% endif %}
+        {% else %}
+        <section class="category-empty-state">
+            <svg aria-hidden="true" viewBox="0 0 64 64"><path d="M12 18h40v28H12zM18 18V11h28v7M20 31h24M32 25v12"/></svg>
+            <h2>Products coming soon!</h2>
+            <p>Contact us on WhatsApp for availability and the right part recommendation.</p>
+            {% if empty_whatsapp_url %}<a class="button-primary" href="{{ empty_whatsapp_url }}" target="_blank" rel="noopener">WhatsApp Us</a>{% else %}<a class="button-primary" href="{% url 'contact' %}">WhatsApp Us</a>{% endif %}
+        </section>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

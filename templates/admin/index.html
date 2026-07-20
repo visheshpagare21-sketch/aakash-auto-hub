@@ -1,0 +1,199 @@
+{% extends "admin/base_site.html" %}
+{% load i18n static jazzmin admin_dashboard %}
+
+{% block bodyclass %}{{ block.super }} dashboard{% endblock %}
+
+{% block content_title %}Aakash Auto Hub Dashboard{% endblock %}
+
+{% block breadcrumbs %}
+<ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="{% url 'admin:index' %}">{% trans 'Home' %}</a></li>
+    <li class="breadcrumb-item">Dashboard</li>
+</ol>
+{% endblock %}
+
+{% block content %}
+{% get_jazzmin_ui_tweaks as jazzmin_ui %}
+{% admin_dashboard_stats as stats %}
+{% get_side_menu using="app_list" as dashboard_list %}
+{% if dashboard_list %}
+{% widthratio dashboard_list|length 2 1 as middle %}
+{% endif %}
+
+<div class="col-lg-9 col-12">
+    <div class="card aah-admin-hero mb-4">
+        <div class="card-body">
+            <p class="text-uppercase mb-1" style="color:#f2b705;letter-spacing:.08em;font-weight:800;">Owner Control
+                Panel</p>
+            <h2 class="mb-2">Welcome to Aakash Auto Hub Admin</h2>
+            <p class="mb-0" style="max-width:720px;color:#dbe7ff;">
+                Manage AC part categories, product photos, business contact details, and enquiry activity from one clean
+                dashboard.
+            </p>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-4 col-sm-6 mb-3">
+            <div class="card aah-stat-card">
+                <div class="card-body">
+                    <span class="aah-stat-icon"><i class="fas fa-boxes"></i></span>
+                    <p class="text-muted mt-3 mb-1">Total Products</p>
+                    <div class="aah-stat-number">{{ stats.total_products }}</div>
+                    <small>{{ stats.active_products }} active products</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 col-sm-6 mb-3">
+            <div class="card aah-stat-card">
+                <div class="card-body">
+                    <span class="aah-stat-icon"><i class="fas fa-layer-group"></i></span>
+                    <p class="text-muted mt-3 mb-1">Total Categories</p>
+                    <div class="aah-stat-number">{{ stats.total_categories }}</div>
+                    <small>{{ stats.active_categories }} active categories</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 col-sm-6 mb-3">
+            <div class="card aah-stat-card">
+                <div class="card-body">
+                    <span class="aah-stat-icon"><i class="fab fa-whatsapp"></i></span>
+                    <p class="text-muted mt-3 mb-1">Enquiries This Month</p>
+                    <div class="aah-stat-number">{{ stats.enquiries_this_month }}</div>
+                    <small>WhatsApp / call clicks</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-7 col-sm-12">
+            {% for app in dashboard_list %}
+            <div class="card mb-3">
+                <div class="card-header">
+                    <h5 class="m-0">{{ app.name }}</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table table-sm">
+                        <tbody>
+                            {% for model in app.models %}
+                            <tr>
+                                <td>
+                                    {% if model.url %}
+                                    <a href="{{ model.url }}">{{ model.name }}</a>
+                                    {% else %}
+                                    {{ model.name }}
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <div class="btn-group float-end">
+                                        {% if model.add_url %}
+                                        <a href="{{ model.add_url }}"
+                                            class="btn btn-sm {{ jazzmin_ui.button_classes.success }} addlink">{% trans 'Add' %}</a>
+                                        {% endif %}
+                                        {% if model.url %}
+                                        {% if model.view_only %}
+                                        <a href="{{ model.url }}"
+                                            class="btn btn-sm {{ jazzmin_ui.button_classes.info }} viewlink">{% trans 'View' %}</a>
+                                        {% else %}
+                                        <a href="{{ model.url }}"
+                                            class="btn btn-sm {{ jazzmin_ui.button_classes.info }} changelink">{% if model.custom %}{% trans 'Go' %}{% else %}{% trans 'Change' %}{% endif %}</a>
+                                        {% endif %}
+                                        {% endif %}
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="col-md-5 col-sm-12">
+            <div class="card mb-3">
+                <div class="card-header">
+                    <h5 class="m-0"><i class="fas fa-chart-line mr-2"></i>Most Enquired Products</h5>
+                </div>
+                <div class="card-body">
+                    {% for product in stats.top_products %}
+                    <div class="aah-top-product">
+                        <div>
+                            <strong>{{ product.name }}</strong><br>
+                            <small class="text-muted">{{ product.part_number|default:"No part number" }}</small>
+                        </div>
+                        <span class="badge badge-warning">{{ product.enquiry_count }}</span>
+                    </div>
+                    {% empty %}
+                    <p class="text-muted mb-0">No enquiries yet. Once customers click WhatsApp or Call, top products
+                        will appear here.</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="col-lg-3 col-12">
+    <div id="content-related">
+        <div class="module" id="recent-actions-module">
+            <h4 class="mb-3">{% trans 'Recent actions' %}</h4>
+            {% load log %}
+            {% get_admin_log 6 as admin_log for_user user %}
+            {% if not admin_log %}
+            <p>{% trans 'None available' %}</p>
+            {% else %}
+            <div class="timeline">
+                {% for entry in admin_log %}
+                <div>
+                    {% if entry.is_change %}
+                    <i class="fas fa-edit bg-gray text-xs"></i>
+                    {% elif entry.is_deletion %}
+                    <i class="fas fa-trash bg-danger text-xs"></i>
+                    {% elif entry.is_addition %}
+                    <i class="fas fa-plus-circle bg-success text-xs"></i>
+                    {% endif %}
+
+                    <div class="timeline-item">
+                        <span class="time"><i class="fas fa-clock"></i> {% blocktrans with timesince=entry.action_time|timesince %}{{ timesince }} ago{% endblocktrans %}</span>
+                        <h3 class="timeline-header no-border">
+                            {% if entry.is_deletion or not entry.get_admin_url %}
+                            {{ entry.object_repr }}
+                            {% else %}
+                            <a href="{{ entry.get_admin_url }}">{{ entry.object_repr }}</a>
+                            {% endif %}
+
+                            {% if entry.model %}
+                            <span class="mini quiet">
+                                {% filter capfirst %}
+                                {{ entry.model }}
+                                {% endfilter %}
+                            </span>
+                            {% endif %}
+                        </h3>
+                        {% if not entry.is_deletion %}
+                        <div class="timeline-body">
+                            {% if entry.is_addition %}
+                            {{ entry }}
+                            {% else %}
+                            <ul style="list-style: none; padding: 0;">
+                                {% action_message_to_list entry as action_message_list %}
+                                {% for action_message in action_message_list %}
+                                <li>{{ action_message.msg|style_bold_first_word }}</li>
+                                {% endfor %}
+                            </ul>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+                <div>
+                    <i class="fa fa-clock bg-gray"></i>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

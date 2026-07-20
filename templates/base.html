@@ -1,0 +1,202 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}{{ business_info.business_name }}{% endblock %}</title>
+    <link rel="icon" type="image/png" href="{% static 'images/logoFile.png' %}">
+    <meta name="description" content="{% block meta_description %}{{ business_info.tagline }}{% endblock %}">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        navy: '#0b1f4d',
+                        ink: '#06070a',
+                        gold: '#f2b705',
+                        steel: '#d7deea'
+                    },
+                    fontFamily: {
+                        sans: ['Arial', 'Helvetica Neue', 'sans-serif'],
+                        display: ['Arial Black', 'Arial', 'Helvetica Neue', 'sans-serif']
+                    }
+                }
+            }
+        };
+    </script>
+    <link rel="stylesheet" href="{% static 'css/site.css' %}">
+    {% block extra_head %}{% endblock %}
+</head>
+
+<body>
+    <a class="skip-link" href="#main-content">Skip to content</a>
+
+    <div class="top-strip">
+        <div class="site-container top-strip-inner">
+            <div class="top-strip-left">
+                <span class="top-strip-badge">Trusted AC Parts Partner</span>
+                {% if business_info.phone_number %}
+                <a class="top-strip-link" href="{{ site_contact.phone_href }}">
+                    <svg aria-hidden="true" viewBox="0 0 24 24">
+                        <path
+                            d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.3-.3.7-.4 1.1-.3 1.2.4 2.5.6 3.8.6.6 0 1 .4 1 1v3.5c0 .6-.4 1-1 1C10.8 21.5 3 13.7 3 4c0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.6.6 3.8.1.4 0 .8-.3 1.1l-2.2 1.9Z" />
+                    </svg>
+                    <span>{{ business_info.phone_number }}</span>
+                </a>
+                {% else %}
+                <span class="top-strip-muted">{{ business_info.tagline }}</span>
+                {% endif %}
+            </div>
+            {% if site_contact.whatsapp_url %}
+            <a class="top-whatsapp" href="{{ site_contact.whatsapp_url }}" target="_blank" rel="noopener">
+                <svg aria-hidden="true" viewBox="0 0 24 24">
+                    <path
+                        d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.46 1.33 4.97L2 22l5.25-1.38a9.86 9.86 0 0 0 4.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91C21.96 6.45 17.51 2 12.04 2Zm5.77 14.2c-.24.68-1.2 1.25-1.94 1.41-.52.11-1.2.2-3.49-.75-2.93-1.21-4.82-4.19-4.97-4.38-.14-.19-1.19-1.59-1.19-3.03 0-1.44.75-2.15 1.02-2.44.24-.29.53-.36.71-.36h.51c.16 0 .39-.06.61.47.24.58.82 2.01.89 2.16.07.14.12.32.02.51-.1.19-.15.31-.29.48-.15.17-.31.38-.44.51-.15.14-.3.3-.13.58.17.29.75 1.24 1.61 2.01 1.11.99 2.04 1.3 2.33 1.45.29.14.46.12.63-.07.19-.22.72-.84.91-1.13.19-.29.39-.24.65-.14.27.1 1.7.8 1.99.94.29.14.48.22.55.34.07.12.07.7-.17 1.38Z" />
+                </svg>
+                <span>WhatsApp</span>
+            </a>
+            {% endif %}
+        </div>
+    </div>
+
+    <header class="site-header">
+        <div class="site-container header-inner">
+            <a class="brand-lockup" href="{% url 'home' %}" aria-label="{{ business_info.business_name }} home">
+                <img class="brand-logo" src="{{ site_logo_url }}" alt="{{ business_info.business_name }} logo">
+                <span class="brand-copy">
+                    <span class="brand-name">{{ business_info.business_name }}</span>
+                    <span class="brand-tagline">{{ business_info.tagline }}</span>
+                </span>
+            </a>
+
+            <button class="mobile-menu-toggle" type="button" id="mobileMenuToggle" aria-controls="siteNav"
+                aria-expanded="false">
+                <span></span>
+                <span></span>
+                <span></span>
+                <span class="sr-only">Open menu</span>
+            </button>
+
+            <nav class="site-nav" id="siteNav" aria-label="Primary navigation">
+                <a href="{% url 'home' %}">Home</a>
+                <a href="{% url 'categories' %}">Categories</a>
+                <a href="{% url 'about' %}">About</a>
+                <a href="{% url 'contact' %}">Contact</a>
+            </nav>
+        </div>
+    </header>
+
+    <main id="main-content">
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="site-footer">
+        <div class="trust-ribbon" aria-label="Service promises">
+            <div class="site-container trust-ribbon-inner">
+                {% for badge in site_trust_badges %}
+                <span>{{ badge }}</span>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="site-container footer-grid">
+            <section class="footer-brand">
+                <a class="footer-logo-row" href="{% url 'home' %}">
+                    <img class="footer-logo" src="{{ site_logo_url }}" alt="{{ business_info.business_name }} logo">
+                    <span>
+                        <strong>{{ business_info.business_name }}</strong>
+                        <small>{{ business_info.tagline }}</small>
+                    </span>
+                </a>
+                <p>{{ business_info.about_text|default:business_info.tagline }}</p>
+            </section>
+
+            <section class="footer-column">
+                <h2>Address</h2>
+                {% if business_info.address %}
+                <p>{{ business_info.address|linebreaksbr }}</p>
+                {% else %}
+                <p class="footer-muted">Address will appear here after it is added in Business Info.</p>
+                {% endif %}
+            </section>
+
+            <section class="footer-column" id="contact">
+                <h2>Contact</h2>
+                <ul class="footer-contact-list">
+                    {% if business_info.phone_number %}
+                    <li><a href="{{ site_contact.phone_href }}">Phone: {{ business_info.phone_number }}</a></li>
+                    {% endif %}
+                    {% if business_info.whatsapp_number %}
+                    <li><a href="{{ site_contact.whatsapp_url }}" target="_blank" rel="noopener">WhatsApp: {{ business_info.whatsapp_number }}</a></li>
+                    {% endif %}
+                    {% if business_info.email %}
+                    <li><a href="mailto:{{ business_info.email }}">Email: {{ business_info.email }}</a></li>
+                    {% endif %}
+                    {% if not business_info.phone_number and not business_info.whatsapp_number and not business_info.email %}
+                    <li class="footer-muted">Contact details will appear here after they are added in Business Info.
+                    </li>
+                    {% endif %}
+                </ul>
+                <div class="social-links" aria-label="Social links">
+                    {% if business_info.instagram_url %}
+                    <a href="{{ business_info.instagram_url }}" target="_blank" rel="noopener" aria-label="Instagram">
+                        <svg aria-hidden="true" viewBox="0 0 24 24">
+                            <path
+                                d="M7.8 2h8.4A5.8 5.8 0 0 1 22 7.8v8.4a5.8 5.8 0 0 1-5.8 5.8H7.8A5.8 5.8 0 0 1 2 16.2V7.8A5.8 5.8 0 0 1 7.8 2Zm0 2A3.8 3.8 0 0 0 4 7.8v8.4A3.8 3.8 0 0 0 7.8 20h8.4a3.8 3.8 0 0 0 3.8-3.8V7.8A3.8 3.8 0 0 0 16.2 4H7.8Zm8.7 2.4a1.1 1.1 0 1 1 0 2.2 1.1 1.1 0 0 1 0-2.2ZM12 7.2a4.8 4.8 0 1 1 0 9.6 4.8 4.8 0 0 1 0-9.6Zm0 2a2.8 2.8 0 1 0 0 5.6 2.8 2.8 0 0 0 0-5.6Z" />
+                        </svg>
+                    </a>
+                    {% endif %}
+                    {% if business_info.facebook_url %}
+                    <a href="{{ business_info.facebook_url }}" target="_blank" rel="noopener" aria-label="Facebook">
+                        <svg aria-hidden="true" viewBox="0 0 24 24">
+                            <path d="M14 8h3V4h-3c-3.1 0-5 1.9-5 5v3H6v4h3v6h4v-6h3.2l.8-4h-4V9c0-.7.3-1 1-1Z" />
+                        </svg>
+                    </a>
+                    {% endif %}
+                </div>
+            </section>
+
+            <section class="footer-column" id="categories">
+                <h2>Popular Categories</h2>
+                <div class="footer-category-links">
+                    {% for category in popular_categories %}
+                    <a href="{% url 'categories' %}#category-{{ category.slug }}">{{ category.name }}</a>
+                    {% empty %}
+                    <span class="footer-muted">Categories will appear here after products are added.</span>
+                    {% endfor %}
+                </div>
+            </section>
+        </div>
+
+        <div class="site-container copyright-line">
+            <span>Copyright {% now "Y" %} {{ business_info.business_name }}. All rights reserved.</span>
+        </div>
+    </footer>
+
+    <a class="floating-whatsapp{% if not site_contact.whatsapp_url %} is-muted{% endif %}"
+        href="{% if site_contact.whatsapp_url %}{{ site_contact.whatsapp_url }}{% else %}{% url 'contact' %}{% endif %}"
+        {% if site_contact.whatsapp_url %}target="_blank" rel="noopener" {% endif %} aria-label="Contact on WhatsApp">
+        <svg aria-hidden="true" viewBox="0 0 24 24">
+            <path
+                d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.46 1.33 4.97L2 22l5.25-1.38a9.86 9.86 0 0 0 4.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91C21.96 6.45 17.51 2 12.04 2Zm5.77 14.2c-.24.68-1.2 1.25-1.94 1.41-.52.11-1.2.2-3.49-.75-2.93-1.21-4.82-4.19-4.97-4.38-.14-.19-1.19-1.59-1.19-3.03 0-1.44.75-2.15 1.02-2.44.24-.29.53-.36.71-.36h.51c.16 0 .39-.06.61.47.24.58.82 2.01.89 2.16.07.14.12.32.02.51-.1.19-.15.31-.29.48-.15.17-.31.38-.44.51-.15.14-.3.3-.13.58.17.29.75 1.24 1.61 2.01 1.11.99 2.04 1.3 2.33 1.45.29.14.46.12.63-.07.19-.22.72-.84.91-1.13.19-.29.39-.24.65-.14.27.1 1.7.8 1.99.94.29.14.48.22.55.34.07.12.07.7-.17 1.38Z" />
+        </svg>
+    </a>
+
+    <script>
+        const menuToggle = document.getElementById('mobileMenuToggle');
+        const siteNav = document.getElementById('siteNav');
+
+        if (menuToggle && siteNav) {
+            menuToggle.addEventListener('click', () => {
+                const isOpen = siteNav.classList.toggle('is-open');
+                menuToggle.setAttribute('aria-expanded', String(isOpen));
+            });
+        }
+    </script>
+    {% block extra_js %}{% endblock %}
+</body>
+
+</html>

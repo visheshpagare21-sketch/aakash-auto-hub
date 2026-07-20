@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+
+{% block title %}{{ page_title }} | {{ business_info.business_name }}{% endblock %}
+
+{% block content %}
+<section class="page-hero">
+    <div class="site-container page-hero-inner">
+        <div>
+            <p class="hero-kicker">{{ page_kicker }}</p>
+            <h1>{{ page_title }}</h1>
+            <p>{{ page_summary }}</p>
+            <div class="hero-actions">
+                <a class="button-primary" href="{% url 'home' %}">Back Home</a>
+                <a class="button-secondary" href="#contact">Contact Now</a>
+            </div>
+        </div>
+        <div class="hero-mark" aria-hidden="true">
+            <img src="{{ site_logo_url }}" alt="">
+        </div>
+    </div>
+</section>
+
+<section class="content-band" id="{{ page_key }}">
+    <div class="site-container">
+        {% if page_key == 'categories' %}
+        <p class="section-kicker">Quick Links</p>
+        <h2 class="section-title">Active Categories</h2>
+        <p class="section-copy">
+            These links are pulled from categories marked active in admin.
+        </p>
+        <div class="category-preview-grid">
+            {% for category in popular_categories %}
+            <a class="category-tile" id="category-{{ category.slug }}" href="#category-{{ category.slug }}">
+                <strong>{{ category.name }}</strong>
+                <span>{{ category.active_product_count }} active products</span>
+            </a>
+            {% empty %}
+            <div class="category-tile">
+                <strong>No Categories Yet</strong>
+                <span>Add active categories in admin to fill this section.</span>
+            </div>
+            {% endfor %}
+        </div>
+        {% elif page_key == 'contact' %}
+        <p class="section-kicker">Contact Details</p>
+        <h2 class="section-title">Business Information</h2>
+        <p class="section-copy">
+            Phone, WhatsApp, email, address, and social links are managed from Business Info in the admin panel.
+        </p>
+        <div class="category-preview-grid">
+            <div class="category-tile">
+                <strong>Phone</strong>
+                <span>{{ business_info.phone_number|default:"Add phone number in admin" }}</span>
+            </div>
+            <div class="category-tile">
+                <strong>WhatsApp</strong>
+                <span>{{ business_info.whatsapp_number|default:"Add WhatsApp number in admin" }}</span>
+            </div>
+            <div class="category-tile">
+                <strong>Email</strong>
+                <span>{{ business_info.email|default:"Add email in admin" }}</span>
+            </div>
+        </div>
+        {% else %}
+        <p class="section-kicker">Owner Managed</p>
+        <h2 class="section-title">{{ business_info.business_name }}</h2>
+        <p class="section-copy">
+            {{ business_info.about_text|default:page_summary }}
+        </p>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

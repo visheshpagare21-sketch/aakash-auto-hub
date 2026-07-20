@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+
+{% block title %}{{ product.name }} | {{ business_info.business_name }}{% endblock %}
+
+{% block content %}
+<section class="content-band product-page">
+    <div class="site-container product-detail">
+        <a class="back-link" href="{% url 'category-detail' product.category.slug %}">Back to {{ product.category.name }}</a>
+        <div class="product-detail-layout">
+            <section class="product-gallery" aria-label="{{ product.name }} images">
+                <div class="product-main-image">
+                    {% with primary_image=product.images.all|first %}
+                    {% if primary_image %}<img id="productMainImage" src="{{ primary_image.image.url }}" alt="{{ product.name }}">{% else %}<span id="productMainImage" class="product-image-placeholder">AC PART</span>{% endif %}
+                    {% endwith %}
+                </div>
+                {% if product.images.count > 1 %}
+                <div class="product-thumbnails" aria-label="Product image thumbnails">
+                    {% for image in product.images.all %}
+                    <button class="product-thumbnail{% if forloop.first %} is-selected{% endif %}" type="button" data-image-source="{{ image.image.url }}" aria-label="Show image {{ forloop.counter }}">
+                        <img src="{{ image.image.url }}" alt="{{ product.name }} thumbnail {{ forloop.counter }}">
+                    </button>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </section>
+
+            <section class="product-summary">
+                <span class="category-badge">{{ product.category.name }}</span>
+                <h1 class="section-title">{{ product.name }}</h1>
+                {% if product.part_number %}<p class="part-number">OEM Part No: <strong>{{ product.part_number }}</strong></p>{% endif %}
+                {% if product.description %}<div class="product-description">{{ product.description|linebreaks }}</div>{% endif %}
+
+                {% if compatible_models %}
+                <section class="compatible-models">
+                    <h2>Compatible Vehicles</h2>
+                    <div class="model-tags">
+                        {% for model in compatible_models %}<span>{{ model }}</span>{% endfor %}
+                    </div>
+                </section>
+                {% endif %}
+
+                <div class="product-contact-actions">
+                    {% if whatsapp_url %}
+                    <a class="button-primary whatsapp-enquiry" href="{{ whatsapp_url }}" target="_blank" rel="noopener" data-enquiry-url="{% url 'log-whatsapp-enquiry' product.slug %}">
+                        <span>Enquire on WhatsApp</span>
+                    </a>
+                    {% else %}
+                    <a class="button-primary" href="{% url 'contact' %}"><span>Enquire on WhatsApp</span></a>
+                    {% endif %}
+                    {% if business_info.phone_number %}<a class="button-secondary call-button" href="{{ call_url }}">Call Now</a>{% endif %}
+                </div>
+            </section>
+        </div>
+
+        {% if related_products %}
+        <section class="related-products">
+            <p class="section-kicker">More Options</p>
+            <h2 class="section-title">Alternative Parts</h2>
+            <div class="related-product-grid">
+                {% for related_product in related_products %}
+                <a class="related-product-card" href="{% url 'product-detail' related_product.slug %}">
+                    <span class="related-product-image">
+                        {% with related_image=related_product.images.all|first %}
+                        {% if related_image %}<img src="{{ related_image.image.url }}" alt="{{ related_product.name }}" loading="lazy">{% else %}<span>AC PART</span>{% endif %}
+                        {% endwith %}
+                    </span>
+                    <strong>{{ related_product.name }}</strong>
+                </a>
+                {% endfor %}
+            </div>
+        </section>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.querySelectorAll('.product-thumbnail').forEach((thumbnail) => {
+        thumbnail.addEventListener('click', () => {
+            const mainImage = document.getElementById('productMainImage');
+            if (!mainImage || mainImage.tagName !== 'IMG') return;
+            mainImage.src = thumbnail.dataset.imageSource;
+            document.querySelectorAll('.product-thumbnail').forEach((item) => item.classList.remove('is-selected'));
+            thumbnail.classList.add('is-selected');
+        });
+    });
+
+    document.querySelectorAll('.whatsapp-enquiry').forEach((button) => {
+        button.addEventListener('click', () => {
+            const url = button.dataset.enquiryUrl;
+            if (navigator.sendBeacon) {
+                navigator.sendBeacon(url, new Blob([], { type: 'application/json' }));
+            } else {
+                fetch(url, { method: 'POST', credentials: 'same-origin', keepalive: true });
+            }
+        });
+    });
+</script>
+{% endblock %}

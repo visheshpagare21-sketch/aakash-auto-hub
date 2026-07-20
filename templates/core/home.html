@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+
+{% block title %}{{ business_info.business_name }} | {{ business_info.tagline }}{% endblock %}
+
+{% block content %}
+<section class="home-hero">
+    <div class="site-container page-hero-inner">
+        <div>
+            <p class="hero-kicker">{{ business_info.tagline }} <span class="delivery-pill">Free Delivery</span></p>
+            <h1>AC Parts That Keep You Moving</h1>
+            <p>
+                Genuine bus, truck and car AC parts for workshops, fleets and vehicle owners. Get practical advice,
+                reliable quality and fast support from {{ business_info.business_name }}.
+            </p>
+            <form class="hero-search" action="{% url 'search' %}" method="get" role="search">
+                <label class="sr-only" for="homepageSearch">Search Bus AC Parts</label>
+                <input id="homepageSearch" name="q" type="search" placeholder="Search Bus AC Parts" required>
+                <button type="submit" aria-label="Search parts">
+                    <svg aria-hidden="true" viewBox="0 0 24 24">
+                        <path
+                            d="M10.8 3a7.8 7.8 0 1 1 0 15.6A7.8 7.8 0 0 1 10.8 3Zm0 2a5.8 5.8 0 1 0 0 11.6A5.8 5.8 0 0 0 10.8 5Zm6.2 11.6 4.2 4.2-1.4 1.4-4.2-4.2 1.4-1.4Z" />
+                    </svg>
+                </button>
+            </form>
+            <div class="hero-actions">
+                <a class="button-primary" href="{% url 'categories' %}">Explore Categories</a>
+                <a class="button-secondary" href="{% url 'contact' %}">Contact Expert</a>
+            </div>
+        </div>
+        <div class="hero-mark" aria-hidden="true">
+            <img src="{{ site_logo_url }}" alt="">
+        </div>
+    </div>
+</section>
+
+<section class="content-band home-categories" id="categories">
+    <div class="site-container">
+        <p class="section-kicker">Fast Catalog Access</p>
+        <h2 class="section-title">Popular Categories</h2>
+        <p class="section-copy">
+            Quick links will stay synced with the active categories added from the owner admin panel.
+        </p>
+
+        <div class="category-preview-grid">
+            {% for category in popular_categories %}
+            <a class="category-tile category-card" href="{% url 'category-detail' category.slug %}">
+                <span class="category-icon-wrap">
+                    {% if category.icon_image %}
+                    <img src="{{ category.icon_image.url }}" alt="" loading="lazy">
+                    {% else %}
+                    <svg aria-hidden="true" viewBox="0 0 64 64">
+                        <path d="M12 18h40v28H12zM18 18V11h28v7M20 31h24M32 25v12" />
+                    </svg>
+                    {% endif %}
+                </span>
+                <strong>{{ category.name }}</strong>
+                <span>{{ category.active_product_count }} active products</span>
+            </a>
+            {% empty %}
+            <div class="category-tile">
+                <strong>Categories Ready</strong>
+                <span>Add categories from admin and they will appear here automatically.</span>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<section class="content-band dark" id="about">
+    <div class="site-container">
+        <p class="section-kicker">Why Choose Us</p>
+        <h2 class="section-title">Built for AC Parts Buyers</h2>
+        <p class="section-copy">
+            {{ business_info.about_text|default:"A focused parts catalog experience for AC products, compatible models,
+            part numbers, and quick WhatsApp enquiries." }}
+        </p>
+
+        <div class="service-grid">
+            {% for badge in site_trust_badges %}
+            <div class="service-tile service-card">
+                <span class="service-icon" aria-hidden="true">
+                    {% if badge == 'Genuine Parts' %}<svg viewBox="0 0 24 24">
+                        <path
+                            d="m12 3 7 4v5c0 4.4-2.8 7.8-7 9-4.2-1.2-7-4.6-7-9V7l7-4Zm-1 12 5-5-1.4-1.4L11 12.2 9.4 10.6 8 12l3 3Z" />
+                    </svg>
+                    {% elif badge == 'Best Price' %}<svg viewBox="0 0 24 24">
+                        <path d="M3 5h18v4H3V5Zm2 6h14v8H5v-8Zm3 2v4h2v-1h3v1h2v-4H8Z" />
+                    </svg>
+                    {% elif badge == 'Expert Service' %}<svg viewBox="0 0 24 24">
+                        <path
+                            d="m14.7 6.3 3-3 1.4 1.4-3 3 2.6 2.6-4.3 4.3-2.6-2.6-5.1 5.1-1.4-1.4 5.1-5.1-2.6-2.6 4.3-4.3 2.6 2.6Z" />
+                    </svg>
+                    {% else %}<svg viewBox="0 0 24 24">
+                        <path
+                            d="M3 7h11v9H3V7Zm11 3h3l3 3v3h-6v-6Zm-8 8a2 2 0 1 0 0-4 2 2 0 0 0 0 4Zm11 0a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z" />
+                    </svg>{% endif %}
+                </span>
+                <strong>{{ badge }}</strong>
+                <span>Quality support that makes finding the right AC part simple.</span>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+{% if featured_products %}
+<section class="content-band featured-section">
+    <div class="site-container">
+        <p class="section-kicker">Top Picks</p>
+        <h2 class="section-title">Featured Products</h2>
+        <div class="featured-product-grid">
+            {% for product in featured_products %}
+            <article class="featured-product-card">
+                <div class="featured-product-media">
+                    {% with primary_image=product.images.all|first %}
+                    {% if primary_image %}<img src="{{ primary_image.image.url }}" alt="{{ product.name }}"
+                        loading="lazy">{% else %}<span>AC PART</span>{% endif %}
+                    {% endwith %}
+                </div>
+                <p>{{ product.category.name }}</p>
+                <h3>{{ product.name }}</h3>
+                {% if product.part_number %}<span>Part No: {{ product.part_number }}</span>{% endif %}
+            </article>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+{% endblock %}

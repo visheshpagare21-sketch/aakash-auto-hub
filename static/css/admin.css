@@ -1,0 +1,128 @@
+:root {
+    --aah-navy: #0b1f4d;
+    --aah-black: #06070a;
+    --aah-gold: #f2b705;
+    --aah-gold-dark: #c79200;
+}
+
+.main-header.navbar,
+.brand-link,
+.register-page {
+    background: linear-gradient(135deg, var(--aah-black), var(--aah-navy)) !important;
+}
+
+.login-page {
+    background:
+        linear-gradient(135deg, rgba(0, 0, 0, 0.45) 0%, rgba(0, 0, 0, 0.4) 60%, rgba(0, 0, 0, 0.45) 100%),
+        url('../images/hero-bg.jpg') !important;
+    background-size: cover !important;
+    background-position: center !important;
+}
+
+.brand-link .brand-text,
+.main-header .navbar-nav .nav-link,
+.main-header .navbar-nav .nav-link i {
+    color: #ffffff !important;
+}
+
+.main-sidebar {
+    background: linear-gradient(180deg, #050914 0%, var(--aah-navy) 55%, #02040a 100%) !important;
+}
+
+.sidebar-dark-primary .nav-sidebar>.nav-item>.nav-link.active,
+.sidebar-dark-primary .nav-sidebar>.nav-item>.nav-link:hover {
+    background-color: var(--aah-gold) !important;
+    color: var(--aah-black) !important;
+}
+
+.btn-primary,
+.btn-success {
+    background: var(--aah-gold) !important;
+    border-color: var(--aah-gold-dark) !important;
+    color: var(--aah-black) !important;
+    font-weight: 700;
+}
+
+.btn-info {
+    background: var(--aah-navy) !important;
+    border-color: var(--aah-navy) !important;
+    color: #ffffff !important;
+}
+
+.card-primary.card-outline,
+.card-info.card-outline {
+    border-top: 3px solid var(--aah-gold) !important;
+}
+
+.aah-admin-hero {
+    background: linear-gradient(135deg, var(--aah-black), var(--aah-navy));
+    border-left: 4px solid var(--aah-gold);
+    border-radius: 8px;
+    color: #ffffff;
+    overflow: hidden;
+    position: relative;
+}
+
+.aah-admin-hero .card-body {
+    position: relative;
+    z-index: 1;
+}
+
+.brand-link img {
+    background: #ffffff;
+    object-fit: contain;
+}
+
+.aah-stat-card {
+    background: #ffffff !important;
+    border: 1px solid rgba(11, 31, 77, 0.08);
+    border-radius: 8px;
+    color: #141820;
+    box-shadow: 0 8px 18px rgba(11, 31, 77, 0.08);
+}
+
+.aah-stat-card .text-muted {
+    color: #5b6472 !important;
+}
+
+.aah-stat-icon {
+    align-items: center;
+    background: rgba(242, 183, 5, 0.16);
+    border-radius: 8px;
+    color: var(--aah-gold);
+    display: inline-flex;
+    height: 46px;
+    justify-content: center;
+    width: 46px;
+}
+
+.aah-stat-number {
+    color: var(--aah-navy);
+    font-size: 2rem;
+    font-weight: 800;
+    line-height: 1;
+}
+
+.content-header h1,
+.content-header .m-0 {
+    color: var(--aah-navy) !important;
+    font-weight: 800;
+}
+
+#content-related h4 {
+    color: var(--aah-navy);
+    font-weight: 800;
+}
+
+.aah-top-product {
+    align-items: center;
+    border-bottom: 1px solid rgba(11, 31, 77, 0.08);
+    display: flex;
+    gap: 12px;
+    justify-content: space-between;
+    padding: 10px 0;
+}
+
+.aah-top-product:last-child {
+    border-bottom: 0;
+}

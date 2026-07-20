@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block title %}Search Results for "{{ query }}" - {{ business_info.business_name }}{% endblock %}
+
+{% block content %}
+<section class="page-hero">
+    <div class="site-container page-hero-inner">
+        <div>
+            <p class="hero-kicker">Search Results</p>
+            <h1>{{ query|default:"Search" }}</h1>
+        </div>
+    </div>
+</section>
+
+<section class="content-band">
+    <div class="site-container">
+
+        <form class="catalog-search" action="{% url 'search' %}" method="get">
+            <input type="text" name="q" value="{{ query }}" placeholder="Search Bus AC Parts">
+            <button type="submit" class="button-primary">Search</button>
+        </form>
+
+        {% if results %}
+        <div class="category-product-grid">
+            {% for product in results %}
+            <a href="{% url 'product-detail' product.slug %}" class="category-product-card">
+                <div class="category-product-image">
+                    {% with primary_image=product.images.all|first %}
+                    {% if primary_image %}
+                    <img src="{{ primary_image.image.url }}" alt="{{ product.name }}" loading="lazy">
+                    {% else %}
+                    <span>{{ product.name }}</span>
+                    {% endif %}
+                    {% endwith %}
+                </div>
+                <span class="category-product-name">{{ product.name }}</span>
+            </a>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="category-empty-state">
+            <h2>No parts found</h2>
+            <p>Message us on WhatsApp, we'll help you find it!</p>
+            <a href="{{ site_contact.whatsapp_url }}" target="_blank" rel="noopener" class="button-primary">
+                💬 Enquire on WhatsApp
+            </a>
+        </div>
+        {% endif %}
+
+    </div>
+</section>
+{% endblock %}
