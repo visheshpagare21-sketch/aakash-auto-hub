@@ -142,6 +142,11 @@ CLOUDINARY_STORAGE = {
     'API_SECRET': os.getenv('dlyVL9JsGdBmu9tAluljgF6ZvQA'),
 }
 
+print("=== CLOUDINARY DEBUG ===")
+print("CLOUD_NAME:", os.getenv('CLOUDINARY_CLOUD_NAME'))
+print("API_KEY set:", os.getenv('CLOUDINARY_API_KEY') is not None)
+print("API_SECRET set:", os.getenv('CLOUDINARY_API_SECRET') is not None)
+
 STORAGES = {
     "default": {
         "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
