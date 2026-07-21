@@ -65,7 +65,8 @@
     <header class="site-header">
         <div class="site-container header-inner">
             <a class="brand-lockup" href="{% url 'home' %}" aria-label="{{ business_info.business_name }} home">
-                <img class="brand-logo" src="{% static 'images/aakash-auto-hub-logo.png' %}" alt="{{ business_info.business_name }} logo">
+                <img class="brand-logo" src="{% static 'images/logoFile.png' %}"
+                    alt="{{ business_info.business_name }} logo">
                 <span class="brand-copy">
                     <span class="brand-name">{{ business_info.business_name }}</span>
                     <span class="brand-tagline">{{ business_info.tagline }}</span>
@@ -105,7 +106,8 @@
         <div class="site-container footer-grid">
             <section class="footer-brand">
                 <a class="footer-logo-row" href="{% url 'home' %}">
-                    <img class="brand-logo" src="{% static 'images/aakash-auto-hub-logo.png' %}" alt="{{ business_info.business_name }} logo">
+                    <img class="brand-logo" src="{% static 'images/logoFile.png' %}"
+                        alt="{{ business_info.business_name }} logo">
                     <span>
                         <strong>{{ business_info.business_name }}</strong>
                         <small>{{ business_info.tagline }}</small>
@@ -130,12 +132,14 @@
                     <li><a href="{{ site_contact.phone_href }}">Phone: {{ business_info.phone_number }}</a></li>
                     {% endif %}
                     {% if business_info.whatsapp_number %}
-                    <li><a href="{{ site_contact.whatsapp_url }}" target="_blank" rel="noopener">WhatsApp: {{ business_info.whatsapp_number }}</a></li>
+                    <li><a href="{{ site_contact.whatsapp_url }}" target="_blank" rel="noopener">WhatsApp: {{
+                            business_info.whatsapp_number }}</a></li>
                     {% endif %}
                     {% if business_info.email %}
                     <li><a href="mailto:{{ business_info.email }}">Email: {{ business_info.email }}</a></li>
                     {% endif %}
-                    {% if not business_info.phone_number and not business_info.whatsapp_number and not business_info.email %}
+                    {% if not business_info.phone_number and not business_info.whatsapp_number and not
+                    business_info.email %}
                     <li class="footer-muted">Contact details will appear here after they are added in Business Info.
                     </li>
                     {% endif %}
