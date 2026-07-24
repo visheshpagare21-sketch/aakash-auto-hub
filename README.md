@@ -1,32 +1,29 @@
-# Aakash Auto Hub — Bus & Car AC Parts Catalog
+# Aakash Auto Hub - Bus & Car AC Parts Catalog
 
-Django-based product catalog website. No online payments — customers browse
-products and enquire directly via WhatsApp.
+Django product catalog for auto AC parts. Customers browse products and enquire directly through WhatsApp or phone; no prices or online payments are shown.
 
-## Setup
+## Local Setup
 
-1. Create virtual environment: `python -m venv .venv`
-2. Activate it: `.venv\Scripts\activate` (Windows)
+1. Create a virtual environment: `python -m venv .venv`
+2. Activate it: `.venv\Scripts\activate` on Windows
 3. Install dependencies: `pip install -r requirements.txt`
-4. Run migrations: `python manage.py migrate`
-5. Create admin user: `python manage.py createsuperuser`
-6. Run server: `python manage.py runserver`
+4. Copy `.env.example` to `.env`, then use local values with `DEBUG=True`
+5. Run migrations: `python manage.py migrate`
+6. Create an owner account: `python manage.py createsuperuser`
+7. Start the app: `python manage.py runserver`
 
-## Admin Panel
+Visit `/admin/` to manage categories, products, business details, and enquiry logs.
 
-Visit `/admin/` and log in with your superuser credentials to manage:
-- Categories
-- Products
-- Business Info (logo, contact details, social links)
-- Enquiry Logs
+## Hostinger VPS Deployment
 
-## Environment Notes
+The project is configured for a Linux VPS with Nginx, Gunicorn, and systemd.
 
-- Media uploads go to `/media/`
-- Static files (CSS/JS/images) are in `/static/`
-- Before deploying, run `python manage.py collectstatic` and set `DEBUG = False`
-  in settings.py, and add your live domain to `ALLOWED_HOSTS`.
+1. Install packages: `sudo apt update && sudo apt install python3-venv python3-pip nginx`
+2. Upload/clone this project to `/var/www/aakash-auto-hub`, create a virtual environment, and install `requirements.txt`.
+3. Copy `.env.example` to `.env`. Set a new random `SECRET_KEY`, `DEBUG=False`, the real `ALLOWED_HOSTS`, and the HTTPS `CSRF_TRUSTED_ORIGINS` values.
+4. Run `python manage.py migrate` and `python manage.py collectstatic --noinput`.
+5. Copy `deployment/aakash-auto-hub.service` to `/etc/systemd/system/`, adjust its paths/user if needed, then run `sudo systemctl daemon-reload && sudo systemctl enable --now aakash-auto-hub`.
+6. Copy `deployment/nginx-aakash-auto-hub.conf` to `/etc/nginx/sites-available/`, replace `server_name`, enable the site, run `sudo nginx -t`, then reload Nginx.
+7. Add SSL, for example: `sudo certbot --nginx -d your-domain.com -d www.your-domain.com`.
 
-## Deployment
-
-Recommended: Render, Railway, or PythonAnywhere (Django-friendly hosts).
+By default, uploaded media is stored in `/media/` and served by Nginx. Cloudinary is optional: set `USE_CLOUDINARY=True` plus its three Cloudinary credentials in the VPS `.env`.
