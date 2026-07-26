@@ -1,17 +1,13 @@
-{% extends "base.html" %}
+<!DOCTYPE html>
+<html>
 
-{% block title %}Something Went Wrong | {{ business_info.business_name }}{% endblock %}
+<head>
+    <title>Server Error</title>
+</head>
 
-{% block content %}
-<section class="content-band">
-    <div class="site-container" style="text-align:center; padding-block: 4rem;">
-        <h1 class="section-title">Something Went Wrong</h1>
-        <p class="section-copy" style="margin-inline:auto;">
-            We're having a temporary issue. Please try again in a moment.
-        </p>
-        <div class="hero-actions" style="justify-content:center; margin-top:2rem;">
-            <a class="button-primary" href="{% url 'home' %}">Back to Home</a>
-        </div>
-    </div>
-</section>
-{% endblock %}
+<body>
+    <h1>500 - Internal Server Error</h1>
+    <p>Please try again later.</p>
+</body>
+
+</html>
