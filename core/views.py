@@ -1,3 +1,4 @@
+from django.http import HttpResponse
 from urllib.parse import quote
 
 from django.core.paginator import Paginator
@@ -200,3 +201,11 @@ def search(request):
         'results': results,
     }
     return render(request, 'core/search_results.html', context)
+
+def robots_txt(request):
+    return HttpResponse(
+        "User-agent: *\n"
+        "Allow: /\n\n"
+        "Sitemap: https://aakashautohub.com/sitemap.xml",
+        content_type="text/plain",
+    )

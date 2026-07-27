@@ -12,4 +12,5 @@ urlpatterns = [
     path('product/<slug:slug>/enquiry/', views.log_whatsapp_enquiry, name='log-whatsapp-enquiry'),
     path('about/', views.about, name='about'),
     path('contact/', views.contact, name='contact'),
+    path("robots.txt", views.robots_txt, name="robots"),
 ]
