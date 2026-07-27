@@ -45,8 +45,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sitemaps',
     'catalog',
     'core',
+   
 ]
 if USE_CLOUDINARY:
     INSTALLED_APPS += ['cloudinary_storage', 'cloudinary']
