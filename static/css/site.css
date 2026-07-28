@@ -401,13 +401,13 @@ svg {
     max-width: 320px;
     overflow: hidden;
     padding: 0.8rem;
-    width: 100%;
+    width: 110%;
 }
 
 .hero-mark img {
     height: 100%;
-    object-fit: contain;
-    width: 100%;
+    object-fit: cover;
+    width: 200%;
 }
 
 .content-band {
@@ -1172,6 +1172,7 @@ svg {
     z-index: 70;
 }
 
+
 .floating-whatsapp.is-muted {
     background: var(--color-navy);
 }
@@ -1254,10 +1255,27 @@ svg {
         padding-inline: 0.9rem;
     }
 
-    .top-strip-inner,
-    .top-strip-left {
-        align-items: flex-start;
-        flex-direction: column;
+    @media (max-width: 768px) {
+
+        .top-strip-inner {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+            gap: 0.5rem;
+            padding-block: 0.55rem;
+        }
+
+        .top-strip-left {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .top-whatsapp {
+            margin-left: auto;
+            flex-shrink: 0;
+        }
     }
 
     .top-strip-inner {
