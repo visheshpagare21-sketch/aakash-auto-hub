@@ -243,7 +243,7 @@ svg {
 .home-hero {
     background:
         linear-gradient(90deg, rgba(0, 0, 0, 0.75) 0%, rgba(0, 0, 0, 0.6) 55%, rgba(10, 12, 18, 0.45) 100%),
-        url('../images/backLogo.jpeg');
+        url('../images/backLogo.png');
     background-size: cover;
     background-position: center;
     color: #ffffff;
@@ -255,7 +255,7 @@ svg {
 .home-hero {
     background:
         linear-gradient(90deg, rgba(58, 57, 57, 0.824) 0%, rgba(0, 0, 0, 0.6) 55%, rgba(0, 0, 0, 0.863) 100%),
-        url('../images/backLogo.jpeg');
+        url('../images/backLogo.png');
     background-size: cover;
     background-position: center;
     color: #dcdcdc;
