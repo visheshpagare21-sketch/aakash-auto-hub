@@ -1,3 +1,4 @@
+from django.shortcuts import render
 from django.http import HttpResponse
 from urllib.parse import quote
 
@@ -7,7 +8,6 @@ from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
-
 from catalog.models import Category, Product
 from core.models import BusinessInfo, EnquiryLog
 from django.db.models import Q
@@ -28,12 +28,14 @@ def home(request):
         .select_related('category')
         .prefetch_related('images')[:8]
     )
+    business_info = BusinessInfo.get_solo()
     return render(
         request,
         'core/home.html',
         {
             'categories': categories,
             'featured_products': featured_products,
+            'business_info': business_info,
         },
     )
 

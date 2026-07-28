@@ -72,8 +72,12 @@
         <p class="section-kicker">Why Choose Us</p>
         <h2 class="section-title">Built for AC Parts Buyers</h2>
         <p class="section-copy">
-            {{ business_info.about_text|default:"A focused parts catalog experience for AC products, compatible models,
-            part numbers, and quick WhatsApp enquiries." }}
+            {% if business_info.about_text %}
+            {{ business_info.about_text }}
+            {% else %}
+            Browse a wide range of genuine AC parts for buses, trucks, and cars. Find compatible products quickly and
+            connect with us instantly through WhatsApp for expert assistance.
+            {% endif %}
         </p>
 
         <div class="service-grid">
@@ -97,7 +101,22 @@
                     </svg>{% endif %}
                 </span>
                 <strong>{{ badge }}</strong>
-                <span>Quality support that makes finding the right AC part simple.</span>
+
+                {% if badge == 'Genuine Parts' %}
+                <span>Original and trusted AC parts from reliable brands for long-lasting performance.</span>
+
+                {% elif badge == 'Best Price' %}
+                <span>Competitive pricing with excellent value for workshops, dealers, and individual customers.</span>
+
+                {% elif badge == 'Expert Service' %}
+                <span>Professional guidance to help you choose the correct AC part for your vehicle.</span>
+
+                {% elif badge == 'Fast Delivery' %}
+                <span>Quick dispatch and reliable delivery to keep your vehicle back on the road.</span>
+
+                {% else %}
+                <span>Quality AC parts with reliable customer support.</span>
+                {% endif %}
             </div>
             {% endfor %}
         </div>
