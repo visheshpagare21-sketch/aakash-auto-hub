@@ -12,6 +12,13 @@
                     {% with primary_image=product.images.all|first %}
                     {% if primary_image %}<img id="productMainImage" src="{{ primary_image.image.url }}" alt="{{ product.name }}">{% else %}<span id="productMainImage" class="product-image-placeholder">AC PART</span>{% endif %}
                     {% endwith %}
+                    {% if product.images.count > 1 %}
+                    <div class="gallery-dots" aria-label="Product image navigation">
+                        {% for image in product.images.all %}
+                        <button class="gallery-dot{% if forloop.first %} is-selected{% endif %}" type="button" aria-label="Show image {{ forloop.counter }}" data-image-index="{{ forloop.counter0 }}"></button>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
                 </div>
                 {% if product.images.count > 1 %}
                 <div class="product-thumbnails" aria-label="Product image thumbnails">
@@ -76,15 +83,40 @@
 
 {% block extra_js %}
 <script>
-    document.querySelectorAll('.product-thumbnail').forEach((thumbnail) => {
-        thumbnail.addEventListener('click', () => {
-            const mainImage = document.getElementById('productMainImage');
-            if (!mainImage || mainImage.tagName !== 'IMG') return;
-            mainImage.src = thumbnail.dataset.imageSource;
-            document.querySelectorAll('.product-thumbnail').forEach((item) => item.classList.remove('is-selected'));
-            thumbnail.classList.add('is-selected');
-        });
+    const mainImage = document.getElementById('productMainImage');
+    const thumbnails = Array.from(document.querySelectorAll('.product-thumbnail'));
+    const galleryDots = Array.from(document.querySelectorAll('.gallery-dot'));
+    let activeImageIndex = thumbnails.findIndex((thumbnail) => thumbnail.classList.contains('is-selected'));
+    let touchStartX = 0;
+
+    const showProductImage = (index) => {
+        if (!mainImage || mainImage.tagName !== 'IMG' || !thumbnails.length) return;
+        activeImageIndex = (index + thumbnails.length) % thumbnails.length;
+        const activeThumbnail = thumbnails[activeImageIndex];
+        mainImage.src = activeThumbnail.dataset.imageSource;
+        thumbnails.forEach((thumbnail) => thumbnail.classList.remove('is-selected'));
+        galleryDots.forEach((dot) => dot.classList.remove('is-selected'));
+        activeThumbnail.classList.add('is-selected');
+        galleryDots[activeImageIndex]?.classList.add('is-selected');
+    };
+
+    thumbnails.forEach((thumbnail, index) => {
+        thumbnail.addEventListener('click', () => showProductImage(index));
     });
+
+    galleryDots.forEach((dot, index) => {
+        dot.addEventListener('click', () => showProductImage(index));
+    });
+
+    mainImage?.addEventListener('touchstart', (event) => {
+        touchStartX = event.changedTouches[0].screenX;
+    }, { passive: true });
+
+    mainImage?.addEventListener('touchend', (event) => {
+        const swipeDistance = event.changedTouches[0].screenX - touchStartX;
+        if (Math.abs(swipeDistance) < 40) return;
+        showProductImage(swipeDistance < 0 ? activeImageIndex + 1 : activeImageIndex - 1);
+    }, { passive: true });
 
     document.querySelectorAll('.whatsapp-enquiry').forEach((button) => {
         button.addEventListener('click', () => {

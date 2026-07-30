@@ -1,7 +1,38 @@
+from django import forms
 from django.contrib import admin
 from django.utils.html import format_html
 
 from .models import Category, Product, ProductImage
+
+
+class MultipleImageInput(forms.ClearableFileInput):
+    allow_multiple_selected = True
+
+
+class MultipleImageField(forms.FileField):
+    def __init__(self, *args, **kwargs):
+        kwargs.setdefault('widget', MultipleImageInput)
+        super().__init__(*args, **kwargs)
+
+    def clean(self, data, initial=None):
+        single_file_clean = super().clean
+        if not data:
+            return []
+        if isinstance(data, (list, tuple)):
+            return [single_file_clean(file, initial) for file in data]
+        return [single_file_clean(data, initial)]
+
+
+class ProductAdminForm(forms.ModelForm):
+    gallery_images = MultipleImageField(
+        required=False,
+        help_text='Select as many product photos as you want. The first upload becomes primary when no image exists.',
+        label='Upload multiple images',
+    )
+
+    class Meta:
+        model = Product
+        fields = '__all__'
 
 
 @admin.register(Category)
@@ -51,6 +82,7 @@ class ProductImageInline(admin.TabularInline):
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
+    form = ProductAdminForm
     list_display = ('name', 'category', 'is_active', 'is_featured')
     list_editable = ('is_active', 'is_featured')
     list_filter = ('category', 'is_active')
@@ -72,7 +104,23 @@ class ProductAdmin(admin.ModelAdmin):
         ('Publishing', {
             'fields': ('is_active', 'is_featured', 'created_at'),
         }),
+        ('Product Gallery', {
+            'fields': ('gallery_images',),
+            'description': 'Choose multiple photos in one go. Existing photos can be managed below.',
+        }),
     )
+
+    def save_model(self, request, obj, form, change):
+        super().save_model(request, obj, form, change)
+
+        uploaded_images = form.cleaned_data.get('gallery_images', [])
+        has_existing_images = obj.images.exists()
+        for index, image in enumerate(uploaded_images):
+            ProductImage.objects.create(
+                product=obj,
+                image=image,
+                is_primary=not has_existing_images and index == 0,
+            )
 
 
 @admin.register(ProductImage)

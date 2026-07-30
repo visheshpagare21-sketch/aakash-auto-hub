@@ -824,12 +824,48 @@ svg {
     justify-content: center;
     min-height: 360px;
     overflow: hidden;
+    position: relative;
 }
 
 .product-main-image img {
     height: 100%;
     object-fit: contain;
     width: 100%;
+}
+
+.gallery-dots {
+    align-items: center;
+    background: rgba(6, 7, 10, 0.66);
+    border-radius: 999px;
+    bottom: 0.75rem;
+    display: flex;
+    gap: 0.55rem;
+    justify-content: center;
+    left: 50%;
+    min-height: 28px;
+    padding: 0.45rem 0.65rem;
+    position: absolute;
+    transform: translateX(-50%);
+    z-index: 1;
+}
+
+.gallery-dot {
+    background: rgba(255, 255, 255, 0.62);
+    border: 1px solid rgba(255, 255, 255, 0.75);
+    border-radius: 50%;
+    cursor: pointer;
+    height: 9px;
+    padding: 0;
+    transition: background 160ms ease, transform 160ms ease;
+    width: 9px;
+}
+
+.gallery-dot.is-selected,
+.gallery-dot:hover,
+.gallery-dot:focus-visible {
+    background: var(--color-gold);
+    outline: none;
+    transform: scale(1.25);
 }
 
 .product-image-placeholder {
