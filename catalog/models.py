@@ -37,6 +37,8 @@ class Category(models.Model):
         related_name='subcategories',
     )
     display_order = models.PositiveIntegerField(default=0)
+    show_on_homepage = models.BooleanField(default=False)
+    homepage_order = models.PositiveIntegerField(blank=True, null=True)
     is_active = models.BooleanField(default=True)
 
     class Meta:
@@ -46,6 +48,7 @@ class Category(models.Model):
         indexes = [
             models.Index(fields=['slug']),
             models.Index(fields=['is_active', 'display_order']),
+            models.Index(fields=['is_active', 'show_on_homepage', 'homepage_order']),
         ]
 
     def __str__(self):

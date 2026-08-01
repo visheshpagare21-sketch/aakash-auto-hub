@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block title %}All Categories | {{ business_info.business_name }}{% endblock %}
+
+{% block content %}
+<section class="content-band home-categories all-categories-page">
+    <div class="site-container">
+        <p class="section-kicker">Full Catalog</p>
+        <h1 class="section-title">All Categories</h1>
+        <p class="section-copy">Browse every active AC parts category available from {{ business_info.business_name }}.</p>
+
+        <form class="catalog-search" action="{% url 'categories' %}" method="get" role="search">
+            <label class="sr-only" for="categorySearch">Search categories</label>
+            <input id="categorySearch" type="search" name="q" value="{{ query }}" placeholder="Search categories">
+            <button type="submit" class="button-primary">Search</button>
+        </form>
+
+        <div class="category-preview-grid all-categories-grid">
+            {% for category in categories %}
+            <a class="category-tile category-card" href="{% url 'category-detail' category.slug %}">
+                <span class="category-icon-wrap">
+                    {% if category.icon_image %}
+                    <img src="{{ category.icon_image.url }}" alt="" loading="lazy">
+                    {% else %}
+                    <svg aria-hidden="true" viewBox="0 0 64 64"><path d="M12 18h40v28H12zM18 18V11h28v7M20 31h24M32 25v12"/></svg>
+                    {% endif %}
+                </span>
+                <strong>{{ category.name }}</strong>
+                <span>{{ category.active_product_count }} active products</span>
+            </a>
+            {% empty %}
+            <div class="category-tile">
+                {% if query %}
+                <strong>No Categories Found</strong>
+                <span>Try a different category name.</span>
+                {% else %}
+                <strong>No Categories Yet</strong>
+                <span>Add active categories from the admin panel to show them here.</span>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}

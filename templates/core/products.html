@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block title %}All Products | {{ business_info.business_name }}{% endblock %}
+
+{% block content %}
+<section class="content-band product-catalog-page">
+    <div class="site-container">
+        <p class="section-kicker">Complete Parts Catalog</p>
+        <h1 class="section-title">All Products</h1>
+        <p class="section-copy">Search by product name, OEM part number, or compatible vehicle model.</p>
+
+        <form class="catalog-search" action="{% url 'products' %}" method="get" role="search">
+            {% if selected_category %}<input type="hidden" name="category" value="{{ selected_category }}">{% endif %}
+            <label class="sr-only" for="productCatalogSearch">Search products</label>
+            <input id="productCatalogSearch" type="search" name="q" value="{{ query }}" placeholder="Search products or part number">
+            <button type="submit" class="button-primary">Search</button>
+        </form>
+
+        <nav class="subcategory-chips product-filter-chips" aria-label="Filter products by category">
+            <a class="subcategory-chip{% if not selected_category %} is-selected{% endif %}" href="{% url 'products' %}{% if query %}?q={{ query|urlencode }}{% endif %}">All</a>
+            {% for category in categories %}
+            <a class="subcategory-chip{% if selected_category == category.slug %} is-selected{% endif %}" href="{% url 'products' %}?category={{ category.slug }}{% if query %}&amp;q={{ query|urlencode }}{% endif %}">{{ category.name }}</a>
+            {% endfor %}
+        </nav>
+
+        {% if page_obj.object_list %}
+        <div class="category-product-grid">
+            {% for product in page_obj %}
+            <a href="{% url 'product-detail' product.slug %}" class="category-product-card">
+                <span class="category-product-image">
+                    {% with primary_image=product.images.all|first %}
+                    {% if primary_image %}
+                    <img src="{{ primary_image.image.url }}" alt="{{ product.name }}" loading="lazy">
+                    {% else %}
+                    <svg aria-hidden="true" viewBox="0 0 64 64"><path d="M12 18h40v28H12zM18 18V11h28v7M20 31h24M32 25v12"/></svg>
+                    {% endif %}
+                    {% endwith %}
+                </span>
+                <span class="category-product-name">{{ product.name }}</span>
+                <span class="product-card-category">{{ product.category.name }}</span>
+            </a>
+            {% endfor %}
+        </div>
+
+        {% if page_obj.has_other_pages %}
+        <nav class="pagination" aria-label="Product pages">
+            {% if page_obj.has_previous %}<a href="?{% if selected_category %}category={{ selected_category }}&amp;{% endif %}{% if query %}q={{ query|urlencode }}&amp;{% endif %}page={{ page_obj.previous_page_number }}">Previous</a>{% endif %}
+            <span>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+            {% if page_obj.has_next %}<a href="?{% if selected_category %}category={{ selected_category }}&amp;{% endif %}{% if query %}q={{ query|urlencode }}&amp;{% endif %}page={{ page_obj.next_page_number }}">Next</a>{% endif %}
+        </nav>
+        {% endif %}
+        {% else %}
+        <section class="category-empty-state">
+            <h2>No products found</h2>
+            <p>Try a different product name, part number, or category.</p>
+            <a class="button-primary" href="{% url 'products' %}">View All Products</a>
+        </section>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

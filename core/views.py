@@ -40,6 +40,39 @@ def home(request):
     )
 
 
+def products(request):
+    query = request.GET.get('q', '').strip()
+    selected_category = request.GET.get('category', '').strip()
+    categories = Category.objects.filter(is_active=True).order_by('display_order', 'name')
+    products_queryset = (
+        Product.objects.filter(is_active=True)
+        .select_related('category')
+        .prefetch_related('images')
+    )
+
+    if query:
+        products_queryset = products_queryset.filter(
+            Q(name__icontains=query)
+            | Q(part_number__icontains=query)
+            | Q(description__icontains=query)
+            | Q(compatible_models__icontains=query)
+        )
+    if selected_category:
+        products_queryset = products_queryset.filter(category__slug=selected_category)
+
+    page_obj = Paginator(products_queryset, 12).get_page(request.GET.get('page'))
+    return render(
+        request,
+        'core/products.html',
+        {
+            'categories': categories,
+            'page_obj': page_obj,
+            'query': query,
+            'selected_category': selected_category,
+        },
+    )
+
+
 def search(request):
     query = request.GET.get('q', '').strip()
     products = Product.objects.none()
@@ -148,14 +181,21 @@ def log_whatsapp_enquiry(request, slug):
 
 
 def categories(request):
+    query = request.GET.get('q', '').strip()
+    all_categories = (
+        Category.objects.filter(is_active=True)
+        .annotate(active_product_count=Count('products', filter=Q(products__is_active=True)))
+        .order_by('display_order', 'name')
+    )
+    if query:
+        all_categories = all_categories.filter(name__icontains=query)
+
     return render(
         request,
-        'core/dummy_page.html',
+        'core/categories.html',
         {
-            'page_title': 'Categories',
-            'page_kicker': 'Catalog',
-            'page_summary': 'Browse our main AC parts categories and quickly find the right section for buses and cars.',
-            'page_key': 'categories',
+            'categories': all_categories,
+            'query': query,
         },
     )
 

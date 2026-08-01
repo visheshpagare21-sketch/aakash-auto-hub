@@ -37,9 +37,9 @@ class ProductAdminForm(forms.ModelForm):
 
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
-    list_display = ('name', 'parent_category', 'display_order', 'is_active', 'icon_preview')
-    list_editable = ('display_order', 'is_active')
-    list_filter = ('is_active', 'parent_category')
+    list_display = ('name', 'parent_category', 'show_on_homepage', 'homepage_order', 'display_order', 'is_active', 'icon_preview')
+    list_editable = ('show_on_homepage', 'homepage_order', 'display_order', 'is_active')
+    list_filter = ('is_active', 'show_on_homepage', 'parent_category')
     search_fields = ('name',)
     prepopulated_fields = {'slug': ('name',)}
     ordering = ('display_order', 'name')
@@ -51,6 +51,10 @@ class CategoryAdmin(admin.ModelAdmin):
         }),
         ('Display Settings', {
             'fields': ('display_order', 'is_active'),
+        }),
+        ('Homepage Settings', {
+            'fields': ('show_on_homepage', 'homepage_order'),
+            'description': 'Select up to 8 categories for the homepage. Lower number appears first.',
         }),
     )
 

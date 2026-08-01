@@ -34,9 +34,9 @@ def site_context(request):
 
     whatsapp_number = business_info.whatsapp_number or business_info.phone_number
     popular_categories = (
-        Category.objects.filter(is_active=True)
+        Category.objects.filter(is_active=True, show_on_homepage=True)
         .annotate(active_product_count=Count('products', filter=Q(products__is_active=True)))
-        .order_by('-active_product_count', 'display_order', 'name')[:6]
+        .order_by('homepage_order', 'display_order', 'name')[:8]
     )
 
     return {

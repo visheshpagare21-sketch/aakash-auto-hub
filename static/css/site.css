@@ -429,6 +429,7 @@ svg {
     text-transform: uppercase;
 }
 
+
 .content-band.dark .section-title {
     color: #ffffff;
 }
@@ -719,6 +720,20 @@ svg {
     line-height: 1.35;
     padding: 1rem;
     text-transform: uppercase;
+}
+
+.product-card-category {
+    color: #667084;
+    display: block;
+    font-size: 0.78rem;
+    font-weight: 800;
+    padding: 0 1rem 1rem;
+    text-transform: uppercase;
+}
+
+.product-filter-chips {
+    border-bottom: 1px solid rgba(11, 31, 77, 0.12);
+    padding-bottom: 1.25rem;
 }
 
 .pagination {
@@ -1453,5 +1468,31 @@ svg {
         height: 54px;
         right: 0.9rem;
         width: 54px;
+    }
+}
+
+.product-page .section-title {
+    font-size: 1.4rem !important;
+    line-height: 1.1 !important;
+}
+
+@media (max-width: 768px) {
+    .product-page .section-title {
+        font-size: 1rem !important;
+    }
+}
+
+.category-listing .section-title,
+.all-categories-page .section-title,
+.product-catalog-page .section-title {
+    font-size: 1.8rem !important;
+    line-height: 1.1;
+}
+
+@media (max-width: 768px) {
+    .category-listing .section-title,
+    .all-categories-page .section-title,
+    .product-catalog-page .section-title {
+        font-size: 1.4rem !important;
     }
 }
