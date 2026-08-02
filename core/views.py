@@ -3,18 +3,72 @@ from django.http import HttpResponse
 from urllib.parse import quote
 
 from django.core.paginator import Paginator
-from django.db.models import Count, Q
+from django.db import connection
+from django.db.models import Case, Count, IntegerField, Q, Value, When
+from django.db.models.functions import Greatest
+from django.contrib.postgres.search import TrigramSimilarity
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 from catalog.models import Category, Product
 from core.models import BusinessInfo, EnquiryLog
-from django.db.models import Q
-from django.shortcuts import render
-from catalog.models import Product
-# from django.db.models import Q
-# from catalog.models import Product
+
+
+def _product_text_filter(query):
+    return (
+        Q(name__icontains=query)
+        | Q(part_number__icontains=query)
+        | Q(description__icontains=query)
+        | Q(compatible_models__icontains=query)
+        | Q(category__name__icontains=query)
+    )
+
+
+def _search_products(query, queryset=None):
+    """Return exact and close product matches, with exact matches first."""
+    products_queryset = queryset or Product.objects.filter(is_active=True)
+    text_match = _product_text_filter(query)
+
+    if connection.vendor != 'postgresql':
+        return products_queryset.filter(text_match)
+
+    return (
+        products_queryset.annotate(
+            exact_match=Case(
+                When(text_match, then=Value(1)),
+                default=Value(0),
+                output_field=IntegerField(),
+            ),
+            similarity_score=Greatest(
+                TrigramSimilarity('name', query),
+                TrigramSimilarity('part_number', query),
+                TrigramSimilarity('description', query),
+                TrigramSimilarity('compatible_models', query),
+                TrigramSimilarity('category__name', query),
+            ),
+        )
+        .filter(Q(exact_match=1) | Q(similarity_score__gte=0.14))
+        .order_by('-exact_match', '-similarity_score', 'name')
+    )
+
+
+def _search_categories(query, queryset):
+    if connection.vendor != 'postgresql':
+        return queryset.filter(name__icontains=query)
+
+    return (
+        queryset.annotate(
+            exact_match=Case(
+                When(name__icontains=query, then=Value(1)),
+                default=Value(0),
+                output_field=IntegerField(),
+            ),
+            similarity_score=TrigramSimilarity('name', query),
+        )
+        .filter(Q(exact_match=1) | Q(similarity_score__gte=0.14))
+        .order_by('-exact_match', '-similarity_score', 'display_order', 'name')
+    )
 
 
 def home(request):
@@ -51,12 +105,7 @@ def products(request):
     )
 
     if query:
-        products_queryset = products_queryset.filter(
-            Q(name__icontains=query)
-            | Q(part_number__icontains=query)
-            | Q(description__icontains=query)
-            | Q(compatible_models__icontains=query)
-        )
+        products_queryset = _search_products(query, products_queryset)
     if selected_category:
         products_queryset = products_queryset.filter(category__slug=selected_category)
 
@@ -71,24 +120,6 @@ def products(request):
             'selected_category': selected_category,
         },
     )
-
-
-def search(request):
-    query = request.GET.get('q', '').strip()
-    products = Product.objects.none()
-    if query:
-        products = (
-            Product.objects.filter(is_active=True)
-            .filter(
-                Q(name__icontains=query)
-                | Q(part_number__icontains=query)
-                | Q(description__icontains=query)
-                | Q(category__name__icontains=query)
-            )
-            .select_related('category')
-            .prefetch_related('images')
-        )
-    return render(request, 'core/search_results.html', {'query': query, 'products': products})
 
 
 def category_detail(request, slug):
@@ -188,7 +219,7 @@ def categories(request):
         .order_by('display_order', 'name')
     )
     if query:
-        all_categories = all_categories.filter(name__icontains=query)
+        all_categories = _search_categories(query, all_categories)
 
     return render(
         request,
@@ -228,15 +259,13 @@ def contact(request):
 
 def search(request):
     query = request.GET.get('q', '').strip()
-    results = []
+    results = Product.objects.none()
 
     if query:
-        results = Product.objects.filter(
-            Q(name__icontains=query) |
-            Q(part_number__icontains=query) |
-            Q(description__icontains=query),
-            is_active=True
-        ).distinct()
+        results = _search_products(
+            query,
+            Product.objects.filter(is_active=True).select_related('category').prefetch_related('images'),
+        )
 
     context = {
         'query': query,
